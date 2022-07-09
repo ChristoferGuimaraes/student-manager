@@ -1,6 +1,14 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.tomcat.jni.Local;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -55,11 +63,19 @@ public class Student {
     )
     private Integer age;
 
+
+    @Column(name = "created_at",
+            nullable = false,
+            updatable = false
+    )
+    private LocalDate createdAt;
+
     public Student() {
 
     }
 
     public Student(String firstName, String lastName, String email, Integer age) {
+        createdAt = LocalDate.now();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -106,6 +122,14 @@ public class Student {
         this.age = age;
     }
 
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "Student{" +
@@ -114,7 +138,7 @@ public class Student {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", age=" + age +
+                ", createdAt=" + createdAt +
                 '}';
     }
-
 }
