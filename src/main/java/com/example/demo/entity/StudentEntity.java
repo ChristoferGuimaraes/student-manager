@@ -1,14 +1,8 @@
 package com.example.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.apache.tomcat.jni.Local;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -20,7 +14,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
         }
 )
 
-public class Student {
+public class StudentEntity {
 
     @Id
     @SequenceGenerator(
@@ -70,11 +64,11 @@ public class Student {
     )
     private LocalDate createdAt;
 
-    public Student() {
+    public StudentEntity() {
 
     }
 
-    public Student(String firstName, String lastName, String email, Integer age) {
+    public StudentEntity(String firstName, String lastName, String email, Integer age) {
         createdAt = LocalDate.now();
         this.firstName = firstName;
         this.lastName = lastName;
