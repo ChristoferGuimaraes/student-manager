@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 
 import java.time.LocalDate;
@@ -68,9 +70,9 @@ public class StudentEntity {
 
 
     @Column(name = "created_at",
-            nullable = false,
             updatable = false
     )
+    @CreationTimestamp
     private LocalDate createdAt;
 
     public StudentEntity() {
@@ -82,7 +84,6 @@ public class StudentEntity {
         this.lastName = lastName;
         this.email = email;
         this.birthDate = birthDate;
-        this.createdAt = LocalDate.now();
     }
 
     public Long getId() {
@@ -110,6 +111,7 @@ public class StudentEntity {
     }
 
     public String getEmail() {
+
         return email;
     }
 
@@ -122,10 +124,12 @@ public class StudentEntity {
     }
 
     public void setAge(Integer age) {
+
         this.age = age;
     }
 
     public LocalDate getCreatedAt() {
+
         return createdAt;
     }
 
