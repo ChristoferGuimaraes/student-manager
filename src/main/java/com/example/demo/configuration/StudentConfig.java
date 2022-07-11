@@ -3,17 +3,15 @@ package com.example.demo.configuration;
 
 import com.example.demo.entity.StudentEntity;
 import com.example.demo.repository.StudentRepository;
-import org.hibernate.Session;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Configuration
 public class StudentConfig {
-
-    StudentRepository studentRepository;
 
     @Bean
     CommandLineRunner commandLineRunner(StudentRepository repository) {
@@ -22,14 +20,14 @@ public class StudentConfig {
                     "Christofer",
                     "Guimarães",
                     "christofer.guimaraes@projuris.com.br",
-                    28);
+                    LocalDate.of(1993, 11, 22));
 
 
             StudentEntity maria = new StudentEntity(
                     "Maria",
                     "Guimarães",
-                    "mariaguimaraes@gmail.com.br",
-                    38);
+                    "maria_guimaraes@gmail.com.br",
+                    LocalDate.of(1983, 2, 14));
 
 
             repository.saveAll(

@@ -20,7 +20,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping
+    @GetMapping("/")
     public List<StudentEntity> getStudents() {
         return studentService.getStudents();
     }

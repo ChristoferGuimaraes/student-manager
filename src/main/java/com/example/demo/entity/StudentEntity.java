@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import javax.persistence.*;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -26,9 +27,9 @@ public class StudentEntity {
             strategy = SEQUENCE,
             generator = "student_sequence"
     )
-
     @Column(name = "id", updatable = false)
     private Long id;
+
 
     @Column(
             name = "first_name",
@@ -37,12 +38,14 @@ public class StudentEntity {
     )
     private String firstName;
 
+
     @Column(
             name = "last_name",
             nullable = false,
             columnDefinition = "TEXT"
     )
     private String lastName;
+
 
     @Column(
             name = "email",
@@ -51,11 +54,17 @@ public class StudentEntity {
     )
     private String email;
 
-    @Column(
-            name = "age",
-            nullable = false
-    )
+
+    @Transient
     private Integer age;
+
+
+    @Column(
+            name = "birth_date",
+            nullable = false,
+            updatable = false
+    )
+    private LocalDate birthDate;
 
 
     @Column(name = "created_at",
@@ -68,12 +77,12 @@ public class StudentEntity {
 
     }
 
-    public StudentEntity(String firstName, String lastName, String email, Integer age) {
-        createdAt = LocalDate.now();
+    public StudentEntity(String firstName, String lastName, String email, LocalDate birthDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.age = age;
+        this.birthDate = birthDate;
+        this.createdAt = LocalDate.now();
     }
 
     public Long getId() {
@@ -109,7 +118,7 @@ public class StudentEntity {
     }
 
     public Integer getAge() {
-        return age;
+        return Period.between(this.birthDate, LocalDate.now()).getYears();
     }
 
     public void setAge(Integer age) {
@@ -124,14 +133,24 @@ public class StudentEntity {
         this.createdAt = createdAt;
     }
 
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+
     @Override
     public String toString() {
-        return "Student{" +
+        return "StudentEntity{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", age=" + age +
+                ", birthDate=" + birthDate +
                 ", createdAt=" + createdAt +
                 '}';
     }
