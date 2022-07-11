@@ -20,7 +20,6 @@ public class StudentConfig {
                     "Christofer",
                     "Guimarães",
                     "christofer.guimaraes@projuris.com.br",
-                    28,
                     LocalDate.of(1993, 11, 22));
 
 
@@ -28,7 +27,6 @@ public class StudentConfig {
                     "Maria",
                     "Guimarães",
                     "maria_guimaraes@gmail.com.br",
-                    38,
                     LocalDate.of(1983, 2, 14));
 
 

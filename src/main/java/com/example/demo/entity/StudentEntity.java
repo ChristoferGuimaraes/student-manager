@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import javax.persistence.*;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -54,10 +55,7 @@ public class StudentEntity {
     private String email;
 
 
-    @Column(
-            name = "age",
-            nullable = false
-    )
+    @Transient
     private Integer age;
 
 
@@ -79,13 +77,12 @@ public class StudentEntity {
 
     }
 
-    public StudentEntity(String firstName, String lastName, String email, Integer age, LocalDate birthDate) {
-        createdAt = LocalDate.now();
+    public StudentEntity(String firstName, String lastName, String email, LocalDate birthDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.age = age;
         this.birthDate = birthDate;
+        this.createdAt = LocalDate.now();
     }
 
     public Long getId() {
@@ -121,7 +118,7 @@ public class StudentEntity {
     }
 
     public Integer getAge() {
-        return age;
+        return Period.between(this.birthDate, LocalDate.now()).getYears();
     }
 
     public void setAge(Integer age) {
@@ -143,6 +140,7 @@ public class StudentEntity {
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
+
 
     @Override
     public String toString() {
