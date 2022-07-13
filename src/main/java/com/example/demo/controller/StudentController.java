@@ -2,10 +2,11 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.StudentEntity;
 import com.example.demo.service.StudentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,9 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @GetMapping("students")
     public List<StudentEntity> getStudents() {
         return studentService.getStudents();
@@ -31,8 +35,8 @@ public class StudentController {
     }
 
     @PostMapping("/student")
-    public void registerNewStudent(@RequestBody StudentEntity student) {
-        studentService.addNewStudent(student);
+    public ResponseEntity<StudentEntity> registerNewStudent(@RequestBody StudentEntity student) {
+        return studentService.addNewStudent(student);
     }
 
     @DeleteMapping("/student/{studentId}")
@@ -43,11 +47,11 @@ public class StudentController {
     @PutMapping("/student/{studentId}")
     public void updateStudent(
             @PathVariable("studentId") Long studentId,
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) LocalDate birthDate) {
-        studentService.updateStudent(studentId, firstName, lastName, email, birthDate);
+            @RequestParam(name = "first-name", required = false) String firstName,
+            @RequestParam(name = "last-name", required = false) String lastName,
+            @RequestParam(name = "email", required = false) String email)
+    {
+        studentService.updateStudent(studentId, firstName, lastName, email);
     }
 
 }
