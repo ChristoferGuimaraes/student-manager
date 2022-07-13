@@ -20,13 +20,13 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
-    @Autowired
-    public StudentService(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
-    }
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public StudentService(StudentRepository studentRepository, ModelMapper modelMapper) {
+        this.studentRepository = studentRepository;
+        this.modelMapper = modelMapper;
+    }
 
     // Do the conversion of an Entity to a DTO
     private StudentDTO toStudentDTO(StudentEntity studentEntity) {
@@ -49,14 +49,16 @@ public class StudentService {
         return studentRepository.findById(studentId).map(this::toStudentDTO);
     }
 
-    public ResponseEntity<StudentEntity> addNewStudent(StudentEntity student) {
-        Optional<StudentEntity> studentByEmail = studentRepository.findStudentByEmail(student.getEmail());
+    public ResponseEntity<StudentEntity> addNewStudent(StudentDTO student) {
+        Optional<StudentDTO> studentByEmail = studentRepository.findStudentByEmail(student.getEmail()).map(this::toStudentDTO);
 
         if (studentByEmail.isPresent()) {
             throw new IllegalStateException("This e-mail is already taken!");
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentRepository.save(student));
+        StudentEntity studentEntity = new StudentEntity(student);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentRepository.save(studentEntity));
     }
 
     public void deleteStudent(Long studentId) {

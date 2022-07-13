@@ -32,7 +32,7 @@ public class StudentController {
     }
 
     @PostMapping("/student")
-    public ResponseEntity<StudentEntity> registerNewStudent(@RequestBody StudentEntity student) {
+    public ResponseEntity<StudentEntity> registerNewStudent(@RequestBody StudentDTO student) {
         return studentService.addNewStudent(student);
     }
 

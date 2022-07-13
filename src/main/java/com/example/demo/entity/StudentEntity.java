@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.dto.StudentDTO;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -84,6 +85,16 @@ public class StudentEntity {
         this.lastName = lastName;
         this.email = email;
         this.birthDate = birthDate;
+    }
+
+    public StudentEntity(StudentDTO studentDTO) {
+        id = studentDTO.getId();
+        firstName = studentDTO.getFirstName();
+        lastName = studentDTO.getLastName();
+        age = studentDTO.getAge();
+        email = studentDTO.getEmail();
+        birthDate = studentDTO.getBirthDate();
+        createdAt = studentDTO.getCreatedAt();
     }
 
     public Long getId() {
