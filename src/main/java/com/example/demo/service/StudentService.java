@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.StudentDTO;
 import com.example.demo.entity.StudentEntity;
 import com.example.demo.repository.StudentRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -23,18 +25,28 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
+    @Autowired
+    private ModelMapper modelMapper;
 
-    public List<StudentEntity> getStudents() {
-        return studentRepository.findAll();
+    // Do the conversion of an Entity to a DTO
+    private StudentDTO toStudentDTO(StudentEntity studentEntity) {
+        return modelMapper.map(studentEntity, StudentDTO.class);
     }
 
-    public Optional<StudentEntity> getStudent(Long studentId) {
+    public List<StudentDTO> getStudents() {
+        return studentRepository.findAll()
+                .stream()
+                .map(this::toStudentDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<StudentDTO> getStudent(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
             throw new IllegalStateException("Student with id " + studentId + " does not exists!");
         }
 
-        return studentRepository.findById(studentId);
+        return studentRepository.findById(studentId).map(this::toStudentDTO);
     }
 
     public ResponseEntity<StudentEntity> addNewStudent(StudentEntity student) {
@@ -43,6 +55,7 @@ public class StudentService {
         if (studentByEmail.isPresent()) {
             throw new IllegalStateException("This e-mail is already taken!");
         }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(studentRepository.save(student));
     }
 
@@ -76,6 +89,5 @@ public class StudentService {
             }
             studentDTO.setEmail(email);
         }
-
     }
 }

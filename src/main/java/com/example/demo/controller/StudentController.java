@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.StudentDTO;
 import com.example.demo.entity.StudentEntity;
 import com.example.demo.service.StudentService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +21,13 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @Autowired
-    private ModelMapper modelMapper;
-
     @GetMapping("students")
-    public List<StudentEntity> getStudents() {
+    public List<StudentDTO> getStudents() {
         return studentService.getStudents();
     }
 
     @GetMapping(path = "/student/{studentId}")
-    public Optional<StudentEntity> getStudent(@PathVariable("studentId") Long studentId) {
+    public Optional<StudentDTO> getStudent(@PathVariable("studentId") Long studentId) {
         return studentService.getStudent(studentId);
     }
 
