@@ -3,6 +3,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/default
     username: postgres
     password: postgres
+  application:
+    name: StudentManager
   jpa:
     show-sql: true
     properties:
@@ -13,3 +15,4 @@ spring:
 server:
   error:
     include-message: always
+  port: 9090
