@@ -4,6 +4,7 @@ import com.example.demo.dto.StudentDTO;
 import com.example.demo.entity.StudentEntity;
 import com.example.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,23 +33,24 @@ public class StudentController {
     }
 
     @PostMapping("/student")
-    public ResponseEntity<StudentEntity> registerNewStudent(@RequestBody StudentDTO student) {
-        return studentService.addNewStudent(student);
+    public ResponseEntity<Object> registerNewStudent(@RequestBody StudentDTO student) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.addNewStudent(student));
     }
 
     @DeleteMapping("/student/{studentId}")
-    public void deleteStudent(@PathVariable("studentId") Long studentId) {
+    public ResponseEntity<Object> deleteStudent(@PathVariable("studentId") Long studentId) {
         studentService.deleteStudent(studentId);
+        return ResponseEntity.status(HttpStatus.OK).body("Student with id " + studentId + " was excluded!");
     }
 
     @PutMapping("/student/{studentId}")
-    public void updateStudent(
+    public ResponseEntity<Object> updateStudent(
             @PathVariable("studentId") Long studentId,
             @RequestParam(name = "first-name", required = false) String firstName,
             @RequestParam(name = "last-name", required = false) String lastName,
             @RequestParam(name = "email", required = false) String email)
     {
-        studentService.updateStudent(studentId, firstName, lastName, email);
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(studentId, firstName, lastName, email));
     }
-
 }

@@ -5,8 +5,6 @@ import com.example.demo.entity.StudentEntity;
 import com.example.demo.repository.StudentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,10 +17,8 @@ import java.util.stream.Collectors;
 public class StudentService {
 
     private final StudentRepository studentRepository;
-
     private final ModelMapper modelMapper;
 
-    @Autowired
     public StudentService(StudentRepository studentRepository, ModelMapper modelMapper) {
         this.studentRepository = studentRepository;
         this.modelMapper = modelMapper;
@@ -49,7 +45,7 @@ public class StudentService {
         return studentRepository.findById(studentId).map(this::toStudentDTO);
     }
 
-    public ResponseEntity<StudentEntity> addNewStudent(StudentDTO student) {
+    public StudentEntity addNewStudent(StudentDTO student) {
         Optional<StudentDTO> studentByEmail = studentRepository.findStudentByEmail(student.getEmail()).map(this::toStudentDTO);
 
         if (studentByEmail.isPresent()) {
@@ -58,38 +54,40 @@ public class StudentService {
 
         StudentEntity studentEntity = new StudentEntity(student);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentRepository.save(studentEntity));
+        return studentRepository.save(studentEntity);
     }
 
+    @Transactional
     public void deleteStudent(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
             throw new IllegalStateException("Student with id " + studentId + "does not exists!");
         }
-
         studentRepository.deleteById(studentId);
+
     }
 
     @Transactional
-    public void updateStudent(Long studentId, String firstName, String lastName, String email) {
+    public StudentEntity updateStudent(Long studentId, String firstName, String lastName, String email) {
         StudentEntity studentEntity = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalStateException("Student with id " + studentId + " does not exists!"));
-        StudentDTO studentDTO = new StudentDTO(studentEntity);
 
-        if (firstName != null && firstName.length() > 0 && !Objects.equals(studentDTO.getFirstName(), firstName)) {
-            studentDTO.setFirstName(firstName);
+        if (firstName != null && firstName.length() > 0 && !Objects.equals(studentEntity.getFirstName(), firstName)) {
+            studentEntity.setFirstName(firstName);
         }
 
-        if (lastName != null && lastName.length() > 0 && !Objects.equals(studentDTO.getLastName(), lastName)) {
-            studentDTO.setLastName(lastName);
+        if (lastName != null && lastName.length() > 0 && !Objects.equals(studentEntity.getLastName(), lastName)) {
+            studentEntity.setLastName(lastName);
         }
 
-        if (email != null && email.length() > 0 && !Objects.equals(studentDTO.getEmail(), email)) {
-            Optional<StudentEntity> studentOptional = studentRepository. findStudentByEmail(email);
-            if (studentOptional.isPresent()) {
+        if (email != null && email.length() > 0) {
+            if (Objects.equals(studentEntity.getEmail(), email)) {
                 throw new IllegalStateException("This e-mail is already taken!");
             }
-            studentDTO.setEmail(email);
+
+            studentEntity.setEmail(email);
         }
+
+        return studentEntity;
     }
 }
