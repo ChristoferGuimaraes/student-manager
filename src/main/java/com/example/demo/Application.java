@@ -11,8 +11,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import java.net.InetAddress;
 
 @Slf4j
-@EnableCaching
-@EnableScheduling
 @SpringBootApplication
 public class Application {
 
