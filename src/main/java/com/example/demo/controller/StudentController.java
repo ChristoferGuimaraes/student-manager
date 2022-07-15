@@ -2,12 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.StudentDTO;
 import com.example.demo.service.StudentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -16,19 +16,22 @@ public class StudentController {
 
     private final StudentService studentService;
 
-    @Autowired
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
 
     @GetMapping("students")
-    public List<StudentDTO> getStudents() {
-        return studentService.getStudents();
+    public ResponseEntity<Page<StudentDTO>> getAllStudents(
+            @RequestParam(value="page", defaultValue = "0" )Integer page,
+            @RequestParam(value="size", defaultValue = "20") Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<StudentDTO> list = studentService.getAllStudents(pageRequest);
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping(path = "/student/{studentId}")
-    public Optional<StudentDTO> getStudent(@PathVariable("studentId") Long studentId) {
-        return studentService.getStudent(studentId);
+    public Optional<StudentDTO> getStudentById(@PathVariable("studentId") Long studentId) {
+        return studentService.getStudentById(studentId);
     }
 
     @PostMapping("/student")
@@ -47,7 +50,7 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(studentId, firstName, lastName, email));
     }
 
-    @DeleteMapping("/student/{studentId}")
+    @DeleteMapping("/student/id/{studentId}")
     public ResponseEntity<Object> deleteStudent(@PathVariable("studentId") Long studentId) {
         studentService.deleteStudent(studentId);
         return ResponseEntity.status(HttpStatus.OK).body("Student with id " + studentId + " was excluded!");

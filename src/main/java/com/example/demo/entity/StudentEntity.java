@@ -10,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 
 import java.time.LocalDate;
-import java.time.Period;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -18,13 +17,8 @@ import static javax.persistence.GenerationType.SEQUENCE;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Table
 @Entity(name = "Student")
-@Table(
-        name = "student",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "student_email_unique", columnNames = "email")
-        }
-)
 public class StudentEntity {
 
     @Id
@@ -37,49 +31,25 @@ public class StudentEntity {
             strategy = SEQUENCE,
             generator = "student_sequence"
     )
-    @Column(name = "id", updatable = false)
+    @Column
     private Long id;
 
-
-    @Column(
-            name = "first_name",
-            nullable = false,
-            columnDefinition = "TEXT"
-    )
+    @Column
     private String firstName;
 
-
-    @Column(
-            name = "last_name",
-            nullable = false,
-            columnDefinition = "TEXT"
-    )
+    @Column
     private String lastName;
 
-
-    @Column(
-            name = "email",
-            nullable = false,
-            columnDefinition = "TEXT"
-    )
+    @Column
     private String email;
-
 
     @Transient
     private Integer age;
 
-
-    @Column(
-            name = "birth_date",
-            nullable = false,
-            updatable = false
-    )
+    @Column
     private LocalDate birthDate;
 
-
-    @Column(name = "created_at",
-            updatable = false
-    )
+    @Column
     @CreationTimestamp
     private LocalDate createdAt;
 

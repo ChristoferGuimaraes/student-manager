@@ -4,14 +4,14 @@ import com.example.demo.dto.StudentDTO;
 import com.example.demo.entity.StudentEntity;
 import com.example.demo.repository.StudentRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 public class StudentService {
@@ -29,14 +29,12 @@ public class StudentService {
         return modelMapper.map(studentEntity, StudentDTO.class);
     }
 
-    public List<StudentDTO> getStudents() {
-        return studentRepository.findAll()
-                .stream()
-                .map(this::toStudentDTO)
-                .collect(Collectors.toList());
+    public Page<StudentDTO> getAllStudents(PageRequest pageRequest) {
+        Page<StudentEntity> page =  studentRepository.findAll(pageRequest);
+        return page.map(this::toStudentDTO);
     }
 
-    public Optional<StudentDTO> getStudent(Long studentId) {
+    public Optional<StudentDTO> getStudentById(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
             throw new IllegalStateException("Student with id " + studentId + " does not exists!");
@@ -90,4 +88,5 @@ public class StudentService {
 
         return toStudentDTO(studentEntity);
     }
+
 }
