@@ -68,7 +68,7 @@ public class StudentService {
     }
 
     @Transactional
-    public StudentEntity updateStudent(Long studentId, String firstName, String lastName, String email) {
+    public StudentDTO updateStudent(Long studentId, String firstName, String lastName, String email) {
         StudentEntity studentEntity = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalStateException("Student with id " + studentId + " does not exists!"));
 
@@ -88,6 +88,6 @@ public class StudentService {
             studentEntity.setEmail(email);
         }
 
-        return studentEntity;
+        return toStudentDTO(studentEntity);
     }
 }
