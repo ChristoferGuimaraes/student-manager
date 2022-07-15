@@ -37,12 +37,6 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.addNewStudent(student));
     }
 
-    @DeleteMapping("/student/{studentId}")
-    public ResponseEntity<Object> deleteStudent(@PathVariable("studentId") Long studentId) {
-        studentService.deleteStudent(studentId);
-        return ResponseEntity.status(HttpStatus.OK).body("Student with id " + studentId + " was excluded!");
-    }
-
     @PutMapping("/student/{studentId}")
     public ResponseEntity<Object> updateStudent(
             @PathVariable("studentId") Long studentId,
@@ -52,4 +46,12 @@ public class StudentController {
     {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(studentId, firstName, lastName, email));
     }
+
+    @DeleteMapping("/student/{studentId}")
+    public ResponseEntity<Object> deleteStudent(@PathVariable("studentId") Long studentId) {
+        studentService.deleteStudent(studentId);
+        return ResponseEntity.status(HttpStatus.OK).body("Student with id " + studentId + " was excluded!");
+    }
+
+
 }
