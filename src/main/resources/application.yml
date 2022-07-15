@@ -11,8 +11,18 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+  liquibase:
+    enabled: true
+    changeLog: liquibase/master.xml
+  properties:
+    hibernate:
+      jdbc:
+        lob:
+          lob:
+            nonContextualCreation: true
 
 server:
   error:
     include-message: always
   port: 9090
+
