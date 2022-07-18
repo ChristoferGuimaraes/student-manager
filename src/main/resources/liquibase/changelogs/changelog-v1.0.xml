@@ -25,9 +25,7 @@
             <column name="birth_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="timestamp">
-
-            </column>
+            <column name="created_at" type="timestamp" />
         </createTable>
     </changeSet>
 </databaseChangeLog>
