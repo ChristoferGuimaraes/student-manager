@@ -3,9 +3,12 @@ package com.example.demo.service;
 import com.example.demo.dto.StudentDTO;
 import com.example.demo.entity.StudentEntity;
 import com.example.demo.repository.StudentRepository;
+import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,43 +32,46 @@ public class StudentService {
         return modelMapper.map(studentEntity, StudentDTO.class);
     }
 
-    public Page<StudentDTO> getAllStudents(PageRequest pageRequest) {
-        Page<StudentEntity> page =  studentRepository.findAll(pageRequest);
-        return page.map(this::toStudentDTO);
+    public ResponseEntity<Object> getAllStudents(PageRequest pageRequest) {
+        Page<Object> page =  studentRepository.findAll(pageRequest).map(this::toStudentDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
-    public Optional<StudentDTO> getStudentById(Long studentId) {
+    public ResponseEntity<Object> getStudentById(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
-            throw new IllegalStateException("Student with id " + studentId + " does not exists!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student with id " + studentId + " does not exists!");
         }
-
-        return studentRepository.findById(studentId).map(this::toStudentDTO);
+        Optional<StudentDTO> studentDTO = studentRepository.findById(studentId).map(this::toStudentDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(studentDTO);
     }
 
-    public StudentEntity addNewStudent(StudentDTO student) {
+    @Transactional
+    public ResponseEntity<Object> addNewStudent(StudentDTO student) {
         Optional<StudentDTO> studentByEmail = studentRepository.findStudentByEmail(student.getEmail()).map(this::toStudentDTO);
 
         if (studentByEmail.isPresent()) {
-            throw new IllegalStateException("This e-mail is already taken!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This e-mail is already taken!");
         }
 
         StudentEntity studentEntity = new StudentEntity(student);
 
-        return studentRepository.save(studentEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentRepository.save(studentEntity));
     }
 
     @Transactional
-    public void deleteStudent(Long studentId) {
+    public ResponseEntity<Object> deleteStudent(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
-            throw new IllegalStateException("Student with id " + studentId + " does not exists!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student with id " + studentId + " does not exists!");
         }
         studentRepository.deleteById(studentId);
+        return ResponseEntity.status(HttpStatus.OK).body("Student with id " + studentId + " was excluded!");
     }
 
     @Transactional
-    public StudentDTO updateStudent(Long studentId, String firstName, String lastName, String email) {
+    public ResponseEntity<Object> updateStudent(Long studentId, String firstName, String lastName, String email) {
         StudentEntity studentEntity = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalStateException("Student with id " + studentId + " does not exists!"));
 
@@ -79,13 +85,13 @@ public class StudentService {
 
         if (email != null && email.length() > 0) {
             if (Objects.equals(studentEntity.getEmail(), email)) {
-                throw new IllegalStateException("This e-mail is already taken!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This e-mail is already taken!");
             }
 
             studentEntity.setEmail(email);
         }
 
-        return toStudentDTO(studentEntity);
+        return ResponseEntity.status(HttpStatus.OK).body(toStudentDTO(studentEntity));
     }
 
 }
