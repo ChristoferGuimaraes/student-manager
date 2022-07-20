@@ -8,12 +8,15 @@
       http://www.liquibase.org/xml/ns/pro
       http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
-    <changeSet id="1" author="christofer.guimaraes">
-        <createSequence sequenceName="student_sequence"
-                        cycle="false"
-                        minValue="1"
-                        maxValue="1000"
-                        startValue="1"
-                        incrementBy="1"/>
+
+    <changeSet author="christofer.guimaraes" id="1">
+        <addForeignKeyConstraint baseColumnNames="student_id" baseTableName="student_course"
+                                 constraintName="FK_apcc8lxk2xnug8377fatvbn04" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="student"/>
+
+        <addForeignKeyConstraint baseColumnNames="course_id" baseTableName="student_course"
+                                 constraintName="FK_apcc8lxk2553422234tvbn03" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="course"/>
     </changeSet>
+
 </databaseChangeLog>

@@ -19,7 +19,7 @@ public class StudentController {
     @GetMapping("students")
     public ResponseEntity<Object> getAllStudents(
             @RequestParam(value="page", defaultValue = "0" )Integer page,
-            @RequestParam(value="limit", defaultValue = "20") Integer size){
+            @RequestParam(value="size", defaultValue = "10") Integer size){
         PageRequest pageRequest = PageRequest.of(page, size);
         return studentService.getAllStudents(pageRequest);
     }
