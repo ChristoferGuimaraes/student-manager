@@ -12,14 +12,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CourseDTO {
-    private Integer id;
     private String name;
     private String teacherName;
     private Integer classNumber;
     private LocalDate startDate;
 
     public CourseDTO(CourseEntity courseEntity) {
-        id = courseEntity.getId();
         name = courseEntity.getName();
         teacherName = courseEntity.getTeacherName();
         classNumber = courseEntity.getClassNumber();

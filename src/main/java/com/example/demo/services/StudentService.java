@@ -1,8 +1,10 @@
-package com.example.demo.service;
+package com.example.demo.services;
 
+import com.example.demo.dto.CourseDTO;
 import com.example.demo.dto.StudentDTO;
-import com.example.demo.entity.StudentEntity;
-import com.example.demo.repository.StudentRepository;
+import com.example.demo.entities.CourseEntity;
+import com.example.demo.entities.StudentEntity;
+import com.example.demo.repositories.StudentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -29,6 +32,10 @@ public class StudentService {
     // Do the conversion of an Entity to a DTO
     private StudentDTO toStudentDTO(StudentEntity studentEntity) {
         return modelMapper.map(studentEntity, StudentDTO.class);
+    }
+
+    private CourseDTO toCourseDTO(CourseEntity courseEntity) {
+        return modelMapper.map(courseEntity, CourseDTO.class);
     }
 
     public ResponseEntity<Object> getAllStudents(PageRequest pageRequest) {
@@ -56,7 +63,14 @@ public class StudentService {
 
         StudentEntity studentEntity = new StudentEntity(student);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentRepository.save(studentEntity));
+
+        studentRepository.save(studentEntity);
+
+        student.setId(studentEntity.getId());
+        student.setCourses(studentEntity.getCourses().stream().map(CourseDTO::new).collect(Collectors.toList()));
+        student.setCreatedAt(studentEntity.getCreatedAt());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(student);
     }
 
     @Transactional

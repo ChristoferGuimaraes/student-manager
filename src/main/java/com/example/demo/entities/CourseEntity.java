@@ -1,5 +1,6 @@
-package com.example.demo.entity;
+package com.example.demo.entities;
 
+import com.example.demo.dto.CourseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.Set;
 public class CourseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer id;
 
@@ -31,10 +32,16 @@ public class CourseEntity {
     private Integer classNumber;
 
     @Column
-    @CreationTimestamp
     private LocalDate startDate;
 
     @ManyToMany(mappedBy = "courses")
     private Set<StudentEntity> studentEntityList;
+
+    public CourseEntity(CourseDTO courseDTO) {
+        name = courseDTO.getName();
+        teacherName = courseDTO.getTeacherName();
+        classNumber = courseDTO.getClassNumber();
+        startDate = courseDTO.getStartDate();
+    }
 
 }

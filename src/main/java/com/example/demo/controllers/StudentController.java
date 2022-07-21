@@ -1,7 +1,7 @@
-package com.example.demo.controller;
+package com.example.demo.controllers;
 
 import com.example.demo.dto.StudentDTO;
-import com.example.demo.service.StudentService;
+import com.example.demo.services.StudentService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
