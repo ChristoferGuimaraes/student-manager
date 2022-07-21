@@ -26,6 +26,7 @@ public class StudentDTO {
 
     private Integer age;
 
+    @NotNull
     private String email;
 
     @NotNull
