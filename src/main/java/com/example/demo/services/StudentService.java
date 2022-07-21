@@ -2,7 +2,6 @@ package com.example.demo.services;
 
 import com.example.demo.dto.CourseDTO;
 import com.example.demo.dto.StudentDTO;
-import com.example.demo.entities.CourseEntity;
 import com.example.demo.entities.StudentEntity;
 import com.example.demo.repositories.StudentRepository;
 import org.modelmapper.ModelMapper;
@@ -59,7 +58,6 @@ public class StudentService {
 
         StudentEntity studentEntity = new StudentEntity(student);
 
-
         studentRepository.save(studentEntity);
 
         student.setId(studentEntity.getId());
@@ -81,26 +79,31 @@ public class StudentService {
 
     @Transactional
     public ResponseEntity<Object> updateStudent(Long studentId, String firstName, String lastName, String email) {
-        StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalStateException("Student with id " + studentId + " does not exists!"));
+        Optional<StudentEntity> studentEntity = studentRepository.findById(studentId);
 
-        if (firstName != null && firstName.length() > 0 && !Objects.equals(studentEntity.getFirstName(), firstName)) {
-            studentEntity.setFirstName(firstName);
+        if (studentEntity.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student with id " + studentId + " does not exists!");
         }
 
-        if (lastName != null && lastName.length() > 0 && !Objects.equals(studentEntity.getLastName(), lastName)) {
-            studentEntity.setLastName(lastName);
+        if (firstName != null && firstName.length() > 0 && !Objects.equals(studentEntity.get().getFirstName(), firstName)) {
+            studentEntity.get().setFirstName(firstName);
         }
 
-        if (email != null && email.length() > 0) {
-            if (Objects.equals(studentEntity.getEmail(), email)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This e-mail is already taken!");
+        if (lastName != null && lastName.length() > 0 && !Objects.equals(studentEntity.get().getLastName(), lastName)) {
+            studentEntity.get().setLastName(lastName);
+        }
+
+        if (email != null) {
+            if (email.length() > 10) {
+                if (Objects.equals(studentEntity.get().getEmail(), email)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This e-mail is already taken!");
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid e-mail! Min. 10 characters!");
             }
-
-            studentEntity.setEmail(email);
+            studentEntity.get().setEmail(email);
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(toStudentDTO(studentEntity));
+        return ResponseEntity.status(HttpStatus.OK).body(toStudentDTO(studentEntity.get()));
     }
 
 }
