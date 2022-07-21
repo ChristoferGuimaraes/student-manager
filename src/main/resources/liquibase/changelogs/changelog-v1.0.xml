@@ -47,10 +47,10 @@
 
         <createTable tableName="student_course">
             <column name="student_id" type="int">
-                <constraints nullable="false" unique="true" />
+                <constraints nullable="false" />
             </column>
             <column name="course_id" type="int">
-                <constraints nullable="false" unique="true" />
+                <constraints nullable="false" />
             </column>
         </createTable>
 
