@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.Optional;
+
 @Service
 public class CourseService {
 
@@ -29,5 +32,79 @@ public class CourseService {
         Page<Object> page = courseRepository.findAll(pageRequest).map(this::toCourseDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
+    }
+
+    public ResponseEntity<Object> findCourseByName(String name) {
+        Optional<CourseEntity> nameCourse = courseRepository.findByName(name);
+
+        if (nameCourse.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course " + name + " does not exists in database!");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(nameCourse.stream().map(this::toCourseDTO));
+    }
+
+    @Transactional
+    public ResponseEntity<Object> addNewCourse(CourseDTO courseDTO) {
+        Optional<CourseEntity> nameCourse = courseRepository.findByName(courseDTO.getName());
+
+        if (nameCourse.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This name is already registered!");
+        }
+
+        if (courseDTO.getName() == null || courseDTO.getName().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("One or more fields are blank or null!");
+        }
+
+        if (courseDTO.getTeacherName() == null || courseDTO.getTeacherName().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("One or more fields are blank or null!");
+        }
+
+        if (courseDTO.getClassNumber() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("One or more fields are blank or null!");
+        }
+
+        if (courseDTO.getStartDate() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("One or more fields are blank or null!");
+        }
+
+        CourseEntity entity = new CourseEntity(courseDTO);
+        courseRepository.save(entity);
+
+        return ResponseEntity.status(HttpStatus.OK).body(courseDTO);
+    }
+
+    @Transactional
+    public ResponseEntity<Object> deleteCourseByName(String courseName) {
+        Optional<CourseEntity> name = courseRepository.findByName((courseName));
+
+        if (name.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course '" + courseName + "' does not exists in database!");
+        }
+
+        courseRepository.deleteById(name.get().getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body("Course '" + courseName + "' deleted successfully");
+    }
+
+
+    public ResponseEntity<Object> updateCourse(String name, String courseName, String teacherName, Integer classNumber) {
+        Optional<CourseEntity> nameOptional = courseRepository.findByName(name);
+        Optional<CourseEntity> courseNameOptional = courseRepository.findByName(courseName);
+
+        if (nameOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course '" + name + "' does not exists in database!");
+        }
+
+        if (courseNameOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course '" + courseName + "' already exists in database!");
+        }
+
+        if (teacherName != null && teacherName.length() > 2) {
+
+        }
+
+        return ResponseEntity.ok("");
+
     }
 }
