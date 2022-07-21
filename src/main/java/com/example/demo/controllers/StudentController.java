@@ -37,8 +37,8 @@ public class StudentController {
     @PutMapping("/student/{studentId}")
     public ResponseEntity<Object> updateStudent(
             @PathVariable("studentId") Long studentId,
-            @RequestParam(name = "first-name", required = false) String firstName,
-            @RequestParam(name = "last-name", required = false) String lastName,
+            @RequestParam(name = "first_name", required = false) String firstName,
+            @RequestParam(name = "last_name", required = false) String lastName,
             @RequestParam(name = "email", required = false) String email)
     {
         return studentService.updateStudent(studentId, firstName, lastName, email);
