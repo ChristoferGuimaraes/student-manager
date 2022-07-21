@@ -34,10 +34,6 @@ public class StudentService {
         return modelMapper.map(studentEntity, StudentDTO.class);
     }
 
-    private CourseDTO toCourseDTO(CourseEntity courseEntity) {
-        return modelMapper.map(courseEntity, CourseDTO.class);
-    }
-
     public ResponseEntity<Object> getAllStudents(PageRequest pageRequest) {
         Page<Object> page =  studentRepository.findAll(pageRequest).map(this::toStudentDTO);
 
