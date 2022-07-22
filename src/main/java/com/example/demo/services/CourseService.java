@@ -88,23 +88,34 @@ public class CourseService {
     }
 
 
+    @Transactional
     public ResponseEntity<Object> updateCourse(String name, String courseName, String teacherName, Integer classNumber) {
-        Optional<CourseEntity> nameOptional = courseRepository.findByName(name);
-        Optional<CourseEntity> courseNameOptional = courseRepository.findByName(courseName);
+        Optional<CourseEntity> courseEntity = courseRepository.findByName(name);
+        Optional<CourseEntity> courseOptional = courseRepository.findByName(courseName);
 
-        if (nameOptional.isEmpty()) {
+
+        if (courseEntity.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course '" + name + "' does not exists in database!");
         }
 
-        if (courseNameOptional.isPresent()) {
+        if (courseOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course '" + courseName + "' already exists in database!");
         }
 
-        if (teacherName != null && teacherName.length() > 2) {
+        if (courseName != null && courseName.length() > 0) {
 
+            courseEntity.get().setName(courseName);
         }
 
-        return ResponseEntity.ok("");
+        if (teacherName != null && teacherName.length() > 0) {
+            courseEntity.get().setTeacherName(teacherName);
+        }
+
+        if (classNumber != null && classNumber > 0) {
+            courseEntity.get().setClassNumber(classNumber);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(toCourseDTO(courseEntity.get()));
 
     }
 }
