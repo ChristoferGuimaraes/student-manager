@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
 
-    Optional<StudentEntity> findStudentByEmail(String email);
+    Boolean existsStudentByEmail(String email);
 }

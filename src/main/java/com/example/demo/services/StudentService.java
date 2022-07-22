@@ -10,13 +10,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
+@Transactional
 @Service
 public class StudentService {
 
@@ -33,12 +34,14 @@ public class StudentService {
         return modelMapper.map(studentEntity, StudentDTO.class);
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<Object> getAllStudents(PageRequest pageRequest) {
         Page<Object> page =  studentRepository.findAll(pageRequest).map(this::toStudentDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<Object> getStudentById(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
@@ -48,11 +51,11 @@ public class StudentService {
         return ResponseEntity.status(HttpStatus.OK).body(studentDTO);
     }
 
-    @Transactional
-    public ResponseEntity<Object> addNewStudent(StudentDTO student) {
-        Optional<StudentDTO> studentByEmail = studentRepository.findStudentByEmail(student.getEmail()).map(this::toStudentDTO);
 
-        if (studentByEmail.isPresent()) {
+    public ResponseEntity<Object> addNewStudent(StudentDTO student) {
+        Boolean studentByEmailExists = studentRepository.existsStudentByEmail(student.getEmail());
+
+        if (studentByEmailExists) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This e-mail is already taken!");
         }
 
@@ -60,14 +63,12 @@ public class StudentService {
 
         studentRepository.save(studentEntity);
 
-        student.setId(studentEntity.getId());
-        student.setCourses(studentEntity.getCourses().stream().map(CourseDTO::new).collect(Collectors.toList()));
-        student.setCreatedAt(studentEntity.getCreatedAt());
+        StudentEntity findEntity = studentRepository.findById(studentEntity.getId()).orElseThrow();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(student);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toStudentDTO(findEntity));
     }
 
-    @Transactional
+
     public ResponseEntity<Object> deleteStudent(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
@@ -77,7 +78,7 @@ public class StudentService {
         return ResponseEntity.status(HttpStatus.OK).body("Student with id " + studentId + " was excluded!");
     }
 
-    @Transactional
+
     public ResponseEntity<Object> updateStudent(Long studentId, String firstName, String lastName, String email) {
         Optional<StudentEntity> studentEntity = studentRepository.findById(studentId);
 
