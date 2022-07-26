@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/default
+    url: jdbc:postgresql://localhost:5432/students
     username: postgres
     password: postgres
   application:
@@ -14,15 +14,8 @@ spring:
   liquibase:
     enabled: true
     changeLog: liquibase/master.xml
-  properties:
-    hibernate:
-      jdbc:
-        lob:
-          lob:
-            nonContextualCreation: true
 
 server:
   error:
     include-message: always
   port: 9090
-

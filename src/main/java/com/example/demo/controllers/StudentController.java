@@ -1,7 +1,7 @@
-package com.example.demo.controller;
+package com.example.demo.controllers;
 
 import com.example.demo.dto.StudentDTO;
-import com.example.demo.service.StudentService;
+import com.example.demo.services.StudentService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class StudentController {
     @GetMapping("students")
     public ResponseEntity<Object> getAllStudents(
             @RequestParam(value="page", defaultValue = "0" )Integer page,
-            @RequestParam(value="limit", defaultValue = "20") Integer size){
+            @RequestParam(value="size", defaultValue = "10") Integer size){
         PageRequest pageRequest = PageRequest.of(page, size);
         return studentService.getAllStudents(pageRequest);
     }
@@ -37,8 +37,8 @@ public class StudentController {
     @PutMapping("/student/{studentId}")
     public ResponseEntity<Object> updateStudent(
             @PathVariable("studentId") Long studentId,
-            @RequestParam(name = "first-name", required = false) String firstName,
-            @RequestParam(name = "last-name", required = false) String lastName,
+            @RequestParam(name = "first_name", required = false) String firstName,
+            @RequestParam(name = "last_name", required = false) String lastName,
             @RequestParam(name = "email", required = false) String email)
     {
         return studentService.updateStudent(studentId, firstName, lastName, email);

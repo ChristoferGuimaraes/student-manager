@@ -1,4 +1,4 @@
-package com.example.demo.entity;
+package com.example.demo.entities;
 
 import com.example.demo.dto.StudentDTO;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -53,6 +55,21 @@ public class StudentEntity {
     @CreationTimestamp
     private LocalDate createdAt;
 
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "student_course",
+    joinColumns = @JoinColumn(name = "student_id"),
+    inverseJoinColumns = @JoinColumn(name= "course_id"))
+    private List<CourseEntity> courses;
+
+    public StudentEntity(Long id, String firstName, String lastName, String email, Integer age, LocalDate birthDate, LocalDate createdAt) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.age = age;
+        this.birthDate = birthDate;
+        this.createdAt = createdAt;
+    }
 
     public StudentEntity(StudentDTO studentDTO) {
         id = studentDTO.getId();
@@ -62,6 +79,7 @@ public class StudentEntity {
         email = studentDTO.getEmail();
         birthDate = studentDTO.getBirthDate();
         createdAt = studentDTO.getCreatedAt();
+        courses = studentDTO.getCourses().stream().map(CourseEntity::new).collect(Collectors.toList());
     }
 
 }

@@ -9,6 +9,13 @@
       http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
     <changeSet id="0" author="christofer.guimaraes">
+        <createSequence sequenceName="student_sequence"
+                        cycle="false"
+                        minValue="1"
+                        maxValue="1000"
+                        startValue="1"
+                        incrementBy="1"/>
+
         <createTable tableName="student">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false" unique="true" />
@@ -27,5 +34,29 @@
             </column>
             <column name="created_at" type="timestamp" />
         </createTable>
+
+        <createTable tableName="course">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true" />
+            </column>
+            <column name="name" type="TEXT" />
+            <column name="teacher_name" type="TEXT" />
+            <column name="class_number" type="int" />
+            <column name="start_date" type="timestamp" />
+        </createTable>
+
+        <createTable tableName="student_course">
+            <column name="student_id" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="course_id" type="int">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="student_id, course_id" tableName="student_course"/>
+
     </changeSet>
+
+
 </databaseChangeLog>

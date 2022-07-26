@@ -1,21 +1,23 @@
-package com.example.demo.service;
+package com.example.demo.services;
 
+import com.example.demo.dto.CourseDTO;
 import com.example.demo.dto.StudentDTO;
-import com.example.demo.entity.StudentEntity;
-import com.example.demo.repository.StudentRepository;
-import org.apache.coyote.Response;
+import com.example.demo.entities.StudentEntity;
+import com.example.demo.repositories.StudentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
 import java.util.Objects;
 import java.util.Optional;
 
 
+@Transactional
 @Service
 public class StudentService {
 
@@ -32,12 +34,14 @@ public class StudentService {
         return modelMapper.map(studentEntity, StudentDTO.class);
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<Object> getAllStudents(PageRequest pageRequest) {
         Page<Object> page =  studentRepository.findAll(pageRequest).map(this::toStudentDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<Object> getStudentById(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
@@ -47,20 +51,24 @@ public class StudentService {
         return ResponseEntity.status(HttpStatus.OK).body(studentDTO);
     }
 
-    @Transactional
-    public ResponseEntity<Object> addNewStudent(StudentDTO student) {
-        Optional<StudentDTO> studentByEmail = studentRepository.findStudentByEmail(student.getEmail()).map(this::toStudentDTO);
 
-        if (studentByEmail.isPresent()) {
+    public ResponseEntity<Object> addNewStudent(StudentDTO student) {
+        Boolean studentByEmailExists = studentRepository.existsStudentByEmail(student.getEmail());
+
+        if (studentByEmailExists) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This e-mail is already taken!");
         }
 
         StudentEntity studentEntity = new StudentEntity(student);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentRepository.save(studentEntity));
+        studentRepository.save(studentEntity);
+
+        StudentEntity findEntity = studentRepository.findById(studentEntity.getId()).orElseThrow();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(toStudentDTO(findEntity));
     }
 
-    @Transactional
+
     public ResponseEntity<Object> deleteStudent(Long studentId) {
         boolean exists = studentRepository.existsById(studentId);
         if (!exists) {
@@ -70,28 +78,33 @@ public class StudentService {
         return ResponseEntity.status(HttpStatus.OK).body("Student with id " + studentId + " was excluded!");
     }
 
-    @Transactional
+
     public ResponseEntity<Object> updateStudent(Long studentId, String firstName, String lastName, String email) {
-        StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalStateException("Student with id " + studentId + " does not exists!"));
+        Optional<StudentEntity> studentEntity = studentRepository.findById(studentId);
 
-        if (firstName != null && firstName.length() > 0 && !Objects.equals(studentEntity.getFirstName(), firstName)) {
-            studentEntity.setFirstName(firstName);
+        if (studentEntity.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student with id " + studentId + " does not exists!");
         }
 
-        if (lastName != null && lastName.length() > 0 && !Objects.equals(studentEntity.getLastName(), lastName)) {
-            studentEntity.setLastName(lastName);
+        if (firstName != null && firstName.length() > 0 && !Objects.equals(studentEntity.get().getFirstName(), firstName)) {
+            studentEntity.get().setFirstName(firstName);
         }
 
-        if (email != null && email.length() > 0) {
-            if (Objects.equals(studentEntity.getEmail(), email)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This e-mail is already taken!");
+        if (lastName != null && lastName.length() > 0 && !Objects.equals(studentEntity.get().getLastName(), lastName)) {
+            studentEntity.get().setLastName(lastName);
+        }
+
+        if (email != null) {
+            if (email.length() > 10) {
+                if (Objects.equals(studentEntity.get().getEmail(), email)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This e-mail is already taken!");
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid e-mail! Min. 10 characters!");
             }
-
-            studentEntity.setEmail(email);
+            studentEntity.get().setEmail(email);
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(toStudentDTO(studentEntity));
+        return ResponseEntity.status(HttpStatus.OK).body(toStudentDTO(studentEntity.get()));
     }
 
 }
