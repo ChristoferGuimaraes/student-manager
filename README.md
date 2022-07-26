@@ -1,4 +1,4 @@
-What i'm practing with this project:
+What I'm practing with this project:
 
 - Spring JPA
 - Connect to a PostgreSQL database
