@@ -39,7 +39,7 @@ public class CourseService {
         Optional<CourseEntity> nameCourse = courseRepository.findByName(name);
 
         if (nameCourse.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course " + name + " does not exists in database!"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + name + "' does not exists in database!"));
         }
         return ResponseEntity.status(HttpStatus.OK).body(nameCourse.stream().map(this::toCourseDTO));
     }
