@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 
@@ -52,7 +51,6 @@ public class StudentEntity {
     private LocalDate birthDate;
 
     @Column
-    @CreationTimestamp
     private LocalDate createdAt;
 
     @ManyToMany(cascade = {CascadeType.ALL})
@@ -80,6 +78,11 @@ public class StudentEntity {
         birthDate = studentDTO.getBirthDate();
         createdAt = studentDTO.getCreatedAt();
         courses = studentDTO.getCourses().stream().map(CourseEntity::new).collect(Collectors.toList());
+    }
+
+    @PrePersist
+    private void prePersist() {
+        createdAt = LocalDate.now();
     }
 
 }
