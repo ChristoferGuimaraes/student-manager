@@ -36,7 +36,7 @@ public class CourseService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findCourseByName(String name) {
-        Optional<CourseEntity> nameCourse = courseRepository.findByName(name);
+        Optional<CourseEntity> nameCourse = courseRepository.findByName(name.toUpperCase());
 
         if (nameCourse.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + name + "' does not exists in database!"));
@@ -48,7 +48,7 @@ public class CourseService {
         Optional<CourseEntity> nameCourse = courseRepository.findByName(courseDTO.getName());
 
         if (nameCourse.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("This name is already registered!"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + nameCourse.get().getName() + "' is already registered!"));
         }
 
         if (courseDTO.getName() == null || courseDTO.getName().isBlank()) {
