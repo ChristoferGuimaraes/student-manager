@@ -36,7 +36,8 @@ public class CourseService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findCourseByName(String name) {
-        Optional<CourseEntity> nameCourse = courseRepository.findByName(name.toUpperCase());
+
+        Optional<CourseEntity> nameCourse = courseRepository.findByNameIgnoreCase(name);
 
         if (nameCourse.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + name + "' does not exists in database!"));
@@ -45,10 +46,10 @@ public class CourseService {
     }
 
     public ResponseEntity<Object> addNewCourse(CourseDTO courseDTO) {
-        Optional<CourseEntity> nameCourse = courseRepository.findByName(courseDTO.getName());
+        Optional<CourseEntity> nameCourse = courseRepository.findByNameIgnoreCase(courseDTO.getName());
 
         if (nameCourse.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + nameCourse.get().getName() + "' is already registered!"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + courseDTO.getName() + "' is already registered!"));
         }
 
         if (courseDTO.getName() == null || courseDTO.getName().isBlank()) {
@@ -74,7 +75,7 @@ public class CourseService {
     }
 
     public ResponseEntity<Object> deleteCourseByName(String courseName) {
-        Optional<CourseEntity> name = courseRepository.findByName((courseName));
+        Optional<CourseEntity> name = courseRepository.findByNameIgnoreCase((courseName));
 
         if (name.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + courseName + "' does not exists in database!"));
@@ -82,12 +83,12 @@ public class CourseService {
 
         courseRepository.deleteById(name.get().getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(new PayloadErrorDTO("Course '" + courseName + "' deleted successfully"));
+        return ResponseEntity.status(HttpStatus.OK).body(new PayloadErrorDTO("Course '" + name.get().getName() + "' deleted successfully"));
     }
 
     public ResponseEntity<Object> updateCourse(String name, String courseName, String teacherName, Integer classNumber) {
-        Optional<CourseEntity> courseEntity = courseRepository.findByName(name);
-        Optional<CourseEntity> courseOptional = courseRepository.findByName(courseName);
+        Optional<CourseEntity> courseEntity = courseRepository.findByNameIgnoreCase(name);
+        Optional<CourseEntity> courseOptional = courseRepository.findByNameIgnoreCase(courseName);
 
 
         if (courseEntity.isEmpty()) {
