@@ -1,9 +1,7 @@
 package com.example.demo.entities;
 
 import com.example.demo.dto.CourseDTO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,6 +10,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table
 @Entity(name = "Course")
 public class CourseEntity {
