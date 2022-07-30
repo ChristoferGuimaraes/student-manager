@@ -33,6 +33,10 @@ public class StudentService {
     public ResponseEntity<Object> getAllStudents(PageRequest pageRequest) {
         Page<Object> page =  studentRepository.findAll(pageRequest).map(this::toStudentDTO);
 
+        if (page.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new PayloadErrorDTO("This page has no Students!"));
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
@@ -58,9 +62,7 @@ public class StudentService {
 
         studentRepository.save(studentEntity);
 
-        StudentEntity findEntity = studentRepository.findById(studentEntity.getId()).orElseThrow();
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(toStudentDTO(findEntity));
+        return ResponseEntity.status(HttpStatus.CREATED).body(toStudentDTO(studentEntity));
     }
 
 
