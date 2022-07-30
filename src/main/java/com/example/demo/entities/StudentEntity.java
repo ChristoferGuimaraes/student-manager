@@ -1,10 +1,7 @@
 package com.example.demo.entities;
 
 import com.example.demo.dto.StudentDTO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -15,9 +12,9 @@ import java.util.stream.Collectors;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Table
 @Entity(name = "Student")
 public class StudentEntity {
@@ -58,16 +55,6 @@ public class StudentEntity {
     joinColumns = @JoinColumn(name = "student_id"),
     inverseJoinColumns = @JoinColumn(name= "course_id"))
     private List<CourseEntity> courses;
-
-    public StudentEntity(Long id, String firstName, String lastName, String email, Integer age, LocalDate birthDate, LocalDate createdAt) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.age = age;
-        this.birthDate = birthDate;
-        this.createdAt = createdAt;
-    }
 
     public StudentEntity(StudentDTO studentDTO) {
         id = studentDTO.getId();
