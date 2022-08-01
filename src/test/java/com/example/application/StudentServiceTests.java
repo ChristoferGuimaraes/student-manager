@@ -71,33 +71,33 @@ public class StudentServiceTests {
     }
 
     @Test
-    public void shouldVerifyRepositoryPersistenceAndReturnStatusCodeCreated() {
-        Mockito.doReturn(false).when(studentRepository).existsStudentByEmail(any());
-        Mockito.doReturn(Optional.empty()).when(courseRepository).findByNameIgnoreCase(any());
-        Mockito.doReturn(studentEntity).when(studentRepository).save(any());
+    public void shouldPersistWhenEmailAndCourseNotExistInDatabase_ReturnStatusCode201() {
+        doReturn(false).when(studentRepository).existsStudentByEmail(any());
+        doReturn(Optional.empty()).when(courseRepository).findByNameIgnoreCase(any());
+        doReturn(studentEntity).when(studentRepository).save(any());
 
         ResponseEntity<Object> student = studentService.addNewStudent(studentDTO);
 
-        Mockito.verify(studentRepository, Mockito.times(1)).save(any());
+        verify(studentRepository, times(1)).save(any());
 
         Assert.assertEquals(HttpStatus.CREATED, student.getStatusCode());
     }
 
     @Test
-    public void shouldVerifyIfNotPersistenceAndReturnStatusCodeBadRequest() {
-        Mockito.doReturn(true).when(studentRepository).existsStudentByEmail(any());
+    public void shouldNotPersistWheEmailAlreadyExists_ReturnStatusCode400() {
+        doReturn(true).when(studentRepository).existsStudentByEmail(any());
 
         ResponseEntity<Object> student = studentService.addNewStudent(studentDTO);
 
-        Mockito.verify(studentRepository, Mockito.never()).save(any());
+        verify(studentRepository, never()).save(any());
 
         Assert.assertEquals(HttpStatus.BAD_REQUEST, student.getStatusCode());
     }
 
 
     @Test
-    public void shouldReturnStatusCodeOkWhenExistsById() {
-        Mockito.doReturn(true).when(studentRepository).existsById(any());
+    public void shouldReturnStatusCode200WhenExistsById() {
+        doReturn(true).when(studentRepository).existsById(any());
 
         ResponseEntity<Object> student = studentService.getStudentById(studentDTO.getId());
 
@@ -105,8 +105,8 @@ public class StudentServiceTests {
     }
 
     @Test
-    public void shouldReturnStatusCodeBadRequestWhenDoNotExistsById() {
-        Mockito.doReturn(false).when(studentRepository).existsById(any());
+    public void shouldReturnStatusCode400WhenDoNotExistsById() {
+        doReturn(false).when(studentRepository).existsById(any());
 
         ResponseEntity<Object> student = studentService.getStudentById(studentDTO.getId());
 
