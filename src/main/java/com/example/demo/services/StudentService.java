@@ -64,7 +64,6 @@ public class StudentService {
         if (student.getCourses().size() > 0) {
             for (int i = 0; i < student.getCourses().size(); i++) {
                 Optional<CourseEntity> nameCourse = courseRepository.findByNameIgnoreCase(student.getCourses().get(i).getName());
-                System.out.println(nameCourse);
                 if (nameCourse.isPresent()) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course " + nameCourse.get().getName() + " is already registered!"));
                 }
