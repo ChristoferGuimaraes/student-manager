@@ -37,18 +37,19 @@ public class CourseService {
     @Transactional(readOnly = true)
     public ResponseEntity<Object> findCourseByName(String name) {
 
-        Optional<CourseEntity> nameCourse = courseRepository.findByNameIgnoreCase(name);
+        String replaceName = name.replaceAll("\\+", " ");
+        Optional<CourseEntity> course = courseRepository.findByNameIgnoreCase(replaceName);
 
-        if (nameCourse.isEmpty()) {
+        if (course.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + name + "' does not exists in database!"));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(nameCourse.stream().map(this::toCourseDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(course.stream().map(this::toCourseDTO));
     }
 
     public ResponseEntity<Object> addNewCourse(CourseDTO courseDTO) {
-        Optional<CourseEntity> nameCourse = courseRepository.findByNameIgnoreCase(courseDTO.getName());
+        Optional<CourseEntity> course = courseRepository.findByNameIgnoreCase(courseDTO.getName());
 
-        if (nameCourse.isPresent()) {
+        if (course.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + courseDTO.getName() + "' is already registered!"));
         }
 
@@ -68,22 +69,22 @@ public class CourseService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("One or more fields are blank or null!"));
         }
 
-        CourseEntity entity = new CourseEntity(courseDTO);
-        courseRepository.save(entity);
+        CourseEntity courseEntity = new CourseEntity(courseDTO);
+        courseRepository.save(courseEntity);
 
         return ResponseEntity.status(HttpStatus.OK).body(courseDTO);
     }
 
     public ResponseEntity<Object> deleteCourseByName(String courseName) {
-        Optional<CourseEntity> name = courseRepository.findByNameIgnoreCase((courseName));
+        Optional<CourseEntity> course = courseRepository.findByNameIgnoreCase(courseName);
 
-        if (name.isEmpty()) {
+        if (course.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course '" + courseName + "' does not exists in database!"));
         }
 
-        courseRepository.deleteById(name.get().getId());
+        courseRepository.deleteById(course.get().getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(new PayloadErrorDTO("Course '" + name.get().getName() + "' deleted successfully"));
+        return ResponseEntity.status(HttpStatus.OK).body(new PayloadErrorDTO("Course '" + course.get().getName() + "' deleted successfully!"));
     }
 
     public ResponseEntity<Object> updateCourse(String name, String courseName, String teacherName, Integer classNumber) {

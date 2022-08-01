@@ -27,10 +27,12 @@ public class StudentService {
     private final CourseRepository courseRepository;
     private final ModelMapper modelMapper;
 
+
     // Do the conversion of an Entity to a DTO
     private StudentDTO toStudentDTO(StudentEntity studentEntity) {
         return modelMapper.map(studentEntity, StudentDTO.class);
     }
+
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> getAllStudents(PageRequest pageRequest) {
@@ -42,6 +44,7 @@ public class StudentService {
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
     }
+
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> getStudentById(Long studentId) {
