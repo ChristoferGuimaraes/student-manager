@@ -2,7 +2,9 @@ package com.example.demo.services;
 
 import com.example.demo.dto.PayloadErrorDTO;
 import com.example.demo.dto.StudentDTO;
+import com.example.demo.entities.CourseEntity;
 import com.example.demo.entities.StudentEntity;
+import com.example.demo.repositories.CourseRepository;
 import com.example.demo.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
     private final ModelMapper modelMapper;
 
     // Do the conversion of an Entity to a DTO
@@ -34,7 +37,7 @@ public class StudentService {
         Page<Object> page =  studentRepository.findAll(pageRequest).map(this::toStudentDTO);
 
         if (page.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new PayloadErrorDTO("This page has no Students!"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new PayloadErrorDTO("This page is empty!"));
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
@@ -55,7 +58,17 @@ public class StudentService {
         Boolean studentByEmailExists = studentRepository.existsStudentByEmail(student.getEmail());
 
         if (studentByEmailExists) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("This e-mail is already taken!"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("This e-mail is already in use!"));
+        }
+
+        if (student.getCourses().size() > 0) {
+            for (int i = 0; i < student.getCourses().size(); i++) {
+                Optional<CourseEntity> nameCourse = courseRepository.findByNameIgnoreCase(student.getCourses().get(i).getName());
+                System.out.println(nameCourse);
+                if (nameCourse.isPresent()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Course " + nameCourse.get().getName() + " is already registered!"));
+                }
+            }
         }
 
         StudentEntity studentEntity = new StudentEntity(student);
@@ -94,7 +107,7 @@ public class StudentService {
         if (email != null) {
             if (email.length() > 10) {
                 if (Objects.equals(studentEntity.get().getEmail(), email)) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("This e-mail is already taken!"));
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("This e-mail is already in use!"));
                 }
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PayloadErrorDTO("Invalid e-mail! Min. 10 characters!"));
