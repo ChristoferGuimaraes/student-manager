@@ -2,6 +2,7 @@ package com.example.application;
 
 import com.example.demo.dto.StudentDTO;
 import com.example.demo.entities.StudentEntity;
+import com.example.demo.repositories.CourseRepository;
 import com.example.demo.repositories.StudentRepository;
 
 import com.example.demo.services.StudentService;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 public class StudentServiceTests {
@@ -29,7 +31,10 @@ public class StudentServiceTests {
     private StudentDTO studentDTO;
 
     @Mock
-    private static StudentRepository repository;
+    private static StudentRepository studentRepository;
+
+    @Mock
+    private static CourseRepository courseRepository;
 
     @Mock
     private ModelMapper modelMapper;
@@ -37,7 +42,7 @@ public class StudentServiceTests {
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        studentService = new StudentService(repository, modelMapper);
+        studentService = new StudentService(studentRepository, courseRepository, modelMapper);
 
         LocalDate birthDate = LocalDate.parse("1993-11-22");
         LocalDate createdAt = LocalDate.parse("2022-07-28");
@@ -67,23 +72,24 @@ public class StudentServiceTests {
 
     @Test
     public void shouldVerifyRepositoryPersistenceAndReturnStatusCodeCreated() {
-        Mockito.doReturn(false).when(repository).existsStudentByEmail(any());
-        Mockito.doReturn(studentEntity).when(repository).save(any());
+        Mockito.doReturn(false).when(studentRepository).existsStudentByEmail(any());
+        Mockito.doReturn(Optional.empty()).when(courseRepository).findByNameIgnoreCase(any());
+        Mockito.doReturn(studentEntity).when(studentRepository).save(any());
 
         ResponseEntity<Object> student = studentService.addNewStudent(studentDTO);
 
-        Mockito.verify(repository, Mockito.times(1)).save(any());
+        Mockito.verify(studentRepository, Mockito.times(1)).save(any());
 
         Assert.assertEquals(HttpStatus.CREATED, student.getStatusCode());
     }
 
     @Test
     public void shouldVerifyIfNotPersistenceAndReturnStatusCodeBadRequest() {
-        Mockito.doReturn(true).when(repository).existsStudentByEmail(any());
+        Mockito.doReturn(true).when(studentRepository).existsStudentByEmail(any());
 
         ResponseEntity<Object> student = studentService.addNewStudent(studentDTO);
 
-        Mockito.verify(repository, Mockito.never()).save(any());
+        Mockito.verify(studentRepository, Mockito.never()).save(any());
 
         Assert.assertEquals(HttpStatus.BAD_REQUEST, student.getStatusCode());
     }
@@ -91,7 +97,7 @@ public class StudentServiceTests {
 
     @Test
     public void shouldReturnStatusCodeOkWhenExistsById() {
-        Mockito.doReturn(true).when(repository).existsById(any());
+        Mockito.doReturn(true).when(studentRepository).existsById(any());
 
         ResponseEntity<Object> student = studentService.getStudentById(studentDTO.getId());
 
@@ -100,7 +106,7 @@ public class StudentServiceTests {
 
     @Test
     public void shouldReturnStatusCodeBadRequestWhenDoNotExistsById() {
-        Mockito.doReturn(false).when(repository).existsById(any());
+        Mockito.doReturn(false).when(studentRepository).existsById(any());
 
         ResponseEntity<Object> student = studentService.getStudentById(studentDTO.getId());
 
