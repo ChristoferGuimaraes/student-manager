@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import com.sun.istack.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -15,18 +14,14 @@ public class StudentDTO {
 
     private Long id;
 
-    @NotNull
     private String firstName;
 
-    @NotNull
     private String lastName;
 
     private Integer age;
 
-    @NotNull
     private String email;
 
-    @NotNull
     private LocalDate birthDate;
 
     private LocalDate createdAt;
