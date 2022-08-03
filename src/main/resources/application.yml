@@ -1,10 +1,8 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/students
-    username: postgres
-    password: postgres
   application:
     name: StudentManager
+  profiles:
+    active: dev
   jpa:
     show-sql: true
     properties:
@@ -19,3 +17,28 @@ server:
   error:
     include-message: always
   port: 9090
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/students
+    username: postgres
+    password: postgres
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:postgresql://localhost:5432/students_test
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
