@@ -2,6 +2,7 @@ package com.example.demo.entities;
 
 import com.example.demo.dto.StudentDTO;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 
@@ -56,7 +57,7 @@ public class StudentEntity {
     inverseJoinColumns = @JoinColumn(name= "course_id"))
     private List<CourseEntity> courses;
 
-    public StudentEntity(StudentDTO studentDTO) {
+    public StudentEntity(@NotNull StudentDTO studentDTO) {
         id = studentDTO.getId();
         firstName = studentDTO.getFirstName();
         lastName = studentDTO.getLastName();

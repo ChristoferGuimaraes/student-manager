@@ -5,6 +5,7 @@ import com.example.demo.dto.PayloadErrorDTO;
 import com.example.demo.entities.CourseEntity;
 import com.example.demo.repositories.CourseRepository;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +44,7 @@ public class CourseService {
 
 
     @Transactional(readOnly = true)
-    public ResponseEntity<Object> findCourseByName(String name) {
+    public ResponseEntity<Object> findCourseByName(@NotNull String name) {
         String replaceName = name.replaceAll("\\+", " ");
         Optional<CourseEntity> course = courseRepository.findByNameIgnoreCase(replaceName);
 
@@ -55,7 +56,7 @@ public class CourseService {
     }
 
 
-    public ResponseEntity<Object> addNewCourse(CourseDTO courseDTO) {
+    public ResponseEntity<Object> addNewCourse(@NotNull CourseDTO courseDTO) {
         Optional<CourseEntity> course = courseRepository.findByNameIgnoreCase(courseDTO.getName());
 
         if (course.isPresent()) {
@@ -90,12 +91,12 @@ public class CourseService {
     }
 
 
-    public ResponseEntity<Object> deleteCourseByName(String courseName) {
+    public ResponseEntity<Object> deleteCourseByName(@NotNull String courseName) {
         String replaceName = courseName.replaceAll("\\+", " ");
         Optional<CourseEntity> course = courseRepository.findByNameIgnoreCase(replaceName);
 
         if (course.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new PayloadErrorDTO("Course '" + replaceName + "' does not exists in database!"));
         }
 

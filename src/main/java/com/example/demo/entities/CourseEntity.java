@@ -2,6 +2,7 @@ package com.example.demo.entities;
 
 import com.example.demo.dto.CourseDTO;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -35,7 +36,7 @@ public class CourseEntity {
     @ManyToMany(mappedBy = "courses")
     private Set<StudentEntity> studentEntityList;
 
-    public CourseEntity(CourseDTO courseDTO) {
+    public CourseEntity(@NotNull CourseDTO courseDTO) {
         name = courseDTO.getName();
         teacherName = courseDTO.getTeacherName();
         classNumber = courseDTO.getClassNumber();
