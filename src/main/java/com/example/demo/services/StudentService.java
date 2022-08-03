@@ -7,6 +7,7 @@ import com.example.demo.entities.StudentEntity;
 import com.example.demo.repositories.CourseRepository;
 import com.example.demo.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,7 +59,7 @@ public class StudentService {
     }
 
 
-    public ResponseEntity<Object> addNewStudent(StudentDTO student) {
+    public ResponseEntity<Object> addNewStudent(@NotNull StudentDTO student) {
         Boolean studentByEmailExists = studentRepository.existsStudentByEmail(student.getEmail());
 
         if (studentByEmailExists) {
