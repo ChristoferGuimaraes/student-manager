@@ -255,8 +255,30 @@ public class CourseServiceTests {
         ResponseEntity<Object> course = courseService.updateCourse(name, courseName, teacherName, classNumber);
 
         assertEquals(HttpStatus.BAD_REQUEST, course.getStatusCode());
-
     }
 
+
+    @Test
+    public void shouldFindCourseByNameAndDeleteById_ReturnStatusCode200() {
+        doReturn(Optional.of(courseEntity)).when(courseRepository).findByNameIgnoreCase(courseEntity.getName());
+
+        ResponseEntity<Object> course = courseService.deleteCourseByName(courseEntity.getName());
+
+        verify(courseRepository, times(1)).deleteById(courseEntity.getId());
+
+        assertEquals(HttpStatus.OK, course.getStatusCode());
+    }
+
+
+    @Test
+    public void shouldNotFindCourseByNameAndNotCallDeleteByIdMethod_ReturnStatusCode404() {
+        doReturn(Optional.empty()).when(courseRepository).findByNameIgnoreCase(courseEntity.getName());
+
+        ResponseEntity<Object> course = courseService.deleteCourseByName(courseEntity.getName());
+
+        verify(courseRepository, never()).deleteById(any());
+
+        assertEquals(HttpStatus.NOT_FOUND, course.getStatusCode());
+    }
 
 }
