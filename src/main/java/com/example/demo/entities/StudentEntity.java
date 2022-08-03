@@ -1,11 +1,8 @@
 package com.example.demo.entities;
 
 import com.example.demo.dto.StudentDTO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 
@@ -16,9 +13,9 @@ import java.util.stream.Collectors;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Table
 @Entity(name = "Student")
 public class StudentEntity {
@@ -52,7 +49,6 @@ public class StudentEntity {
     private LocalDate birthDate;
 
     @Column
-    @CreationTimestamp
     private LocalDate createdAt;
 
     @ManyToMany(cascade = {CascadeType.ALL})
@@ -61,17 +57,7 @@ public class StudentEntity {
     inverseJoinColumns = @JoinColumn(name= "course_id"))
     private List<CourseEntity> courses;
 
-    public StudentEntity(Long id, String firstName, String lastName, String email, Integer age, LocalDate birthDate, LocalDate createdAt) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.age = age;
-        this.birthDate = birthDate;
-        this.createdAt = createdAt;
-    }
-
-    public StudentEntity(StudentDTO studentDTO) {
+    public StudentEntity(@NotNull StudentDTO studentDTO) {
         id = studentDTO.getId();
         firstName = studentDTO.getFirstName();
         lastName = studentDTO.getLastName();
@@ -80,6 +66,11 @@ public class StudentEntity {
         birthDate = studentDTO.getBirthDate();
         createdAt = studentDTO.getCreatedAt();
         courses = studentDTO.getCourses().stream().map(CourseEntity::new).collect(Collectors.toList());
+    }
+
+    @PrePersist
+    private void prePersist() {
+        createdAt = LocalDate.now();
     }
 
 }
