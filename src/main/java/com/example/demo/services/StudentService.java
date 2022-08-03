@@ -125,7 +125,9 @@ public class StudentService {
                     .body(new PayloadErrorDTO("This e-mail is already in use!"));
         }
 
-        studentEntity.get().setEmail(email);
+        if (email != null) {
+            studentEntity.get().setEmail(email);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(toStudentDTO(studentEntity.get()));
     }
