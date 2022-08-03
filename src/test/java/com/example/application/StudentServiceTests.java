@@ -1,16 +1,18 @@
 package com.example.application;
 
+import com.example.demo.dto.CourseDTO;
 import com.example.demo.dto.StudentDTO;
+import com.example.demo.entities.CourseEntity;
 import com.example.demo.entities.StudentEntity;
 import com.example.demo.repositories.CourseRepository;
 import com.example.demo.repositories.StudentRepository;
 
 import com.example.demo.services.StudentService;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import org.modelmapper.ModelMapper;
@@ -20,7 +22,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
@@ -40,6 +43,9 @@ public class StudentServiceTests {
     private StudentEntity studentEntity;
     private StudentDTO studentDTO;
 
+    private CourseEntity courseEntity;
+    private CourseDTO courseDTO;
+
     @Mock
     private static StudentRepository studentRepository;
 
@@ -49,7 +55,7 @@ public class StudentServiceTests {
     @Mock
     private ModelMapper modelMapper;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
         studentService = new StudentService(studentRepository, courseRepository, modelMapper);
@@ -78,6 +84,24 @@ public class StudentServiceTests {
                 .createdAt(studentEntity.getCreatedAt())
                 .courses(List.of())
                 .build();
+
+        LocalDate startDate = LocalDate.parse("2021-11-22");
+
+        courseEntity = CourseEntity.builder()
+                .id(1)
+                .name("POO")
+                .teacherName("Johannes")
+                .classNumber(3)
+                .startDate(startDate)
+                .build();
+
+        courseDTO = CourseDTO.builder()
+                .name(courseEntity.getName())
+                .teacherName(courseEntity.getTeacherName())
+                .classNumber(courseEntity.getClassNumber())
+                .startDate(courseEntity.getStartDate())
+                .build();
+
 
         firstName = "Test";
         lastName = "Testing";
@@ -215,28 +239,41 @@ public class StudentServiceTests {
 
     @Test
     public void shouldNotPassIfEmailIsEqual_ReturnStatusCode400() {
-        Optional<StudentEntity> studentEntityOptional = Optional.of(studentEntity);
-        doReturn(studentEntityOptional).when(studentRepository).findById(anyLong());
+        doReturn(Optional.of(studentEntity)).when(studentRepository).findById(anyLong());
 
         String existEmail = "christofer.guimaraes@projuris.com.br";
 
         ResponseEntity<Object> student = studentService.updateStudent(anyLong(), firstName, lastName, existEmail);
 
-        assertEquals(studentEntityOptional.get().getEmail(), existEmail);
+        assertEquals(studentEntity.getEmail(), existEmail);
         assertEquals(HttpStatus.BAD_REQUEST, student.getStatusCode());
     }
 
 
     @Test
     public void shouldNotPassIfEmailLengthIsMoreThan10Char_ReturnStatusCode400() {
-        Optional<StudentEntity> studentEntityOptional = Optional.of(studentEntity);
-        doReturn(studentEntityOptional).when(studentRepository).findById(anyLong());
+        doReturn(Optional.of(studentEntity)).when(studentRepository).findById(anyLong());
 
         String invalidEmail = "email@br";
 
         ResponseEntity<Object> student = studentService.updateStudent(anyLong(), firstName, lastName, invalidEmail);
 
-        Assert.assertNotEquals(invalidEmail, studentEntityOptional.get().getEmail());
+        assertNotEquals(invalidEmail, studentEntity.getEmail());
+        assertEquals(HttpStatus.BAD_REQUEST, student.getStatusCode());
+    }
+
+    @Test
+    public void shouldNotPassIfCourseIsAlreadyInDbAndNotPersist_ReturnStatusCode400() {
+        studentDTO.setCourses(List.of(courseDTO));
+
+        doReturn(false).when(studentRepository).existsStudentByEmail(studentDTO.getEmail());
+
+        doReturn(Optional.of(courseEntity)).when(courseRepository).findByNameIgnoreCase(courseEntity.getName());
+        ResponseEntity<Object> student = studentService.addNewStudent(studentDTO);
+
+        verify(studentRepository, never()).save(any());
+
+        assertEquals(studentDTO.getCourses().size(), 1);
         assertEquals(HttpStatus.BAD_REQUEST, student.getStatusCode());
     }
 

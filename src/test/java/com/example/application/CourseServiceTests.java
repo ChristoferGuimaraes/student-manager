@@ -4,8 +4,8 @@ import com.example.demo.dto.CourseDTO;
 import com.example.demo.entities.CourseEntity;
 import com.example.demo.repositories.CourseRepository;
 import com.example.demo.services.CourseService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 
@@ -40,8 +40,8 @@ public class CourseServiceTests {
     @Mock
     private ModelMapper modelMapper;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
         courseService = new CourseService(courseRepository, modelMapper);
 
@@ -255,6 +255,17 @@ public class CourseServiceTests {
         ResponseEntity<Object> course = courseService.updateCourse(name, courseName, teacherName, classNumber);
 
         assertEquals(HttpStatus.BAD_REQUEST, course.getStatusCode());
+    }
+
+    @Test
+    public void shouldNotUpdateCourseIfCourseNameIsNotInDb_ReturnStatusCode404() {
+        doReturn(Optional.empty()).when(courseRepository).findByNameIgnoreCase(courseEntity.getName());
+
+        String name = courseEntity.getName();
+
+        ResponseEntity<Object> course = courseService.updateCourse(name, courseName, teacherName, classNumber);
+
+        assertEquals(HttpStatus.NOT_FOUND, course.getStatusCode());
     }
 
 
