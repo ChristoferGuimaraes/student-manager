@@ -42,4 +42,9 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     properties:
-      hibernate.hbm2ddl.auto: create-drop
+      hibernate:
+        hbm2ddl:
+          auto: create
+        dialect: org.hibernate.dialect.H2Dialect
+  liquibase:
+    enabled: false
