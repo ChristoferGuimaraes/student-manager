@@ -67,7 +67,7 @@ public class StudentService {
                     .body(new PayloadErrorDTO("This e-mail is already in use!"));
         }
 
-        if (student.getCourses().size() > 0) {
+        if (!student.getCourses().isEmpty()) {
             for (int i = 0; i < student.getCourses().size(); i++) {
                 Optional<CourseEntity> nameCourse = courseRepository.
                         findByNameIgnoreCase(student.getCourses().get(i).getName());
