@@ -9,12 +9,12 @@ import com.example.demo.repositories.StudentRepository;
 
 import com.example.demo.services.StudentService;
 
-
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-
+@ExtendWith(MockitoExtension.class)
 public class StudentServiceTests {
 
     private String firstName;
@@ -57,7 +57,6 @@ public class StudentServiceTests {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
         studentService = new StudentService(studentRepository, courseRepository, modelMapper);
 
         LocalDate birthDate = LocalDate.parse("1993-11-22");
@@ -142,7 +141,7 @@ public class StudentServiceTests {
 
     @Test
     public void shouldExistsById_ReturnStatusCode200() {
-        doReturn(true).when(studentRepository).existsById(anyLong());
+        doReturn(true).when(studentRepository).existsById(1L);
 
         ResponseEntity<Object> student = studentService.getStudentById(studentDTO.getId());
 
@@ -162,13 +161,13 @@ public class StudentServiceTests {
 
     @Test
     public void shouldAddStudentIfEmailAndCourseNotExistsInDbAndPersist_ReturnStatusCode201() {
-        doReturn(false).when(studentRepository).existsStudentByEmail(anyString());
-        doReturn(Optional.empty()).when(courseRepository).findByNameIgnoreCase(anyString());
-        doReturn(studentEntity).when(studentRepository).save(any());
+        doReturn(false).when(studentRepository).existsStudentByEmail(studentEntity.getEmail());
+
+        doReturn(studentEntity).when(studentRepository).save(studentEntity);
 
         ResponseEntity<Object> student = studentService.addNewStudent(studentDTO);
 
-        verify(studentRepository, times(1)).save(any());
+        verify(studentRepository, times(1)).save(studentEntity);
 
         assertEquals(HttpStatus.CREATED, student.getStatusCode());
     }
@@ -176,7 +175,7 @@ public class StudentServiceTests {
 
     @Test
     public void shouldNotAddStudentWhenEmailAlreadyExistsAndNotPersist_ReturnStatusCode400() {
-        doReturn(true).when(studentRepository).existsStudentByEmail(anyString());
+        doReturn(true).when(studentRepository).existsStudentByEmail(studentEntity.getEmail());
 
         ResponseEntity<Object> student = studentService.addNewStudent(studentDTO);
 
@@ -188,11 +187,11 @@ public class StudentServiceTests {
 
     @Test
     public void shouldDeleteStudentByIdAndPersistOneTime_ReturnStatusCode200() {
-        doReturn(true).when(studentRepository).existsById(anyLong());
+        doReturn(true).when(studentRepository).existsById(1L);
 
-        ResponseEntity<Object> student = studentService.deleteStudent(anyLong());
+        ResponseEntity<Object> student = studentService.deleteStudent(1L);
 
-        verify(studentRepository, times(1)).deleteById(anyLong());
+        verify(studentRepository, times(1)).deleteById(1L);
 
         assertEquals(HttpStatus.OK, student.getStatusCode());
     }
@@ -213,7 +212,7 @@ public class StudentServiceTests {
     @Test
     public void shouldUpdateStudentWithAllArguments_ReturnStatusCode200() {
         Optional<StudentEntity> studentEntityOptional = Optional.of(studentEntity);
-        doReturn(studentEntityOptional).when(studentRepository).findById(anyLong());
+        doReturn(studentEntityOptional).when(studentRepository).findById(1L);
 
         Long id = studentEntityOptional.get().getId();
 
@@ -239,11 +238,11 @@ public class StudentServiceTests {
 
     @Test
     public void shouldNotPassIfEmailIsEqual_ReturnStatusCode400() {
-        doReturn(Optional.of(studentEntity)).when(studentRepository).findById(anyLong());
+        doReturn(Optional.of(studentEntity)).when(studentRepository).findById(1L);
 
         String existEmail = "christofer.guimaraes@projuris.com.br";
 
-        ResponseEntity<Object> student = studentService.updateStudent(anyLong(), firstName, lastName, existEmail);
+        ResponseEntity<Object> student = studentService.updateStudent(1L, firstName, lastName, existEmail);
 
         assertEquals(studentEntity.getEmail(), existEmail);
         assertEquals(HttpStatus.BAD_REQUEST, student.getStatusCode());
@@ -252,15 +251,16 @@ public class StudentServiceTests {
 
     @Test
     public void shouldNotPassIfEmailLengthIsMoreThan10Char_ReturnStatusCode400() {
-        doReturn(Optional.of(studentEntity)).when(studentRepository).findById(anyLong());
+        doReturn(Optional.of(studentEntity)).when(studentRepository).findById(1L);
 
         String invalidEmail = "email@br";
 
-        ResponseEntity<Object> student = studentService.updateStudent(anyLong(), firstName, lastName, invalidEmail);
+        ResponseEntity<Object> student = studentService.updateStudent(1L, firstName, lastName, invalidEmail);
 
         assertNotEquals(invalidEmail, studentEntity.getEmail());
         assertEquals(HttpStatus.BAD_REQUEST, student.getStatusCode());
     }
+
 
     @Test
     public void shouldNotPassIfCourseIsAlreadyInDbAndNotPersist_ReturnStatusCode400() {
@@ -271,7 +271,7 @@ public class StudentServiceTests {
         doReturn(Optional.of(courseEntity)).when(courseRepository).findByNameIgnoreCase(courseEntity.getName());
         ResponseEntity<Object> student = studentService.addNewStudent(studentDTO);
 
-        verify(studentRepository, never()).save(any());
+        verify(studentRepository, never()).save(studentEntity);
 
         assertEquals(studentDTO.getCourses().size(), 1);
         assertEquals(HttpStatus.BAD_REQUEST, student.getStatusCode());
