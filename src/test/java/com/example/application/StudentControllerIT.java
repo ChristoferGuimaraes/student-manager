@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("tests")
+@ActiveProfiles("test")
 @ContextConfiguration(classes = {Application.class})
 public class StudentControllerIT {
 
