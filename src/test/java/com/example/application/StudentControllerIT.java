@@ -4,13 +4,13 @@ import com.example.demo.Application;
 import com.example.demo.controllers.StudentController;
 import com.example.demo.dto.StudentDTO;
 import com.example.demo.entities.StudentEntity;
-import com.example.demo.repositories.CourseRepository;
 import com.example.demo.repositories.StudentRepository;
 import com.example.demo.services.StudentService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +32,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -44,14 +44,15 @@ public class StudentControllerIT {
     private StudentEntity studentEntity;
     private StudentDTO studentDTO;
 
+    private ObjectMapper objectMapper;
+    private MockMvc mockMvc;
+
     @Autowired
     private StudentService studentService;
 
     @Autowired
     private StudentRepository studentRepository;
 
-    private ObjectMapper objectMapper;
-    private MockMvc mockMvc;
 
     @BeforeEach
     public void setUp() {
@@ -78,12 +79,20 @@ public class StudentControllerIT {
                 .birthDate(studentEntity.getBirthDate())
                 .courses(Collections.emptyList())
                 .build();
+
+        studentRepository.save(studentEntity);
+    }
+
+
+    @AfterEach
+    public void tearDown(){
+        studentRepository.deleteAll();
     }
 
 
     @Test
     public void insertStudent() throws Exception {
-
+        studentRepository.deleteAll();
         mockMvc.perform(post("/api/student")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsBytes(studentDTO)))
@@ -94,7 +103,6 @@ public class StudentControllerIT {
 
     @Test
     public void findAllStudents() throws Exception {
-        studentRepository.save(studentEntity);
         studentEntity.setEmail("christoferguiam@gmail.com");
         studentRepository.save(studentEntity);
         mockMvc.perform(MockMvcRequestBuilders.get("/api/students")
@@ -103,7 +111,46 @@ public class StudentControllerIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.totalElements", notNullValue()))
                 .andExpect(jsonPath("$.totalPages", notNullValue()));
-        studentRepository.deleteAll();
+    }
+
+
+    @Test
+    public void findStudentById() throws Exception {
+        mockMvc.perform(get("/api/student/{studentId}", studentEntity.getId())
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+
+    @Test
+    public void deleteStudentById() throws Exception {
+        mockMvc.perform(delete("/api/student/id/{studentId}", studentEntity.getId())
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+        assertEquals(0, studentRepository.findAll().size());
+    }
+
+
+    @Test
+    public void updateStudentById() throws Exception {
+        String firstName = "Teste";
+        String lastName = "Testando";
+        String email = "teste@teste.com";
+
+        mockMvc.perform(put("/api/student/{studentId}", studentEntity.getId())
+                        .sessionAttr("studentEntity", studentEntity)
+                        .param("first_name", firstName)
+                        .param("last_name", lastName)
+                        .param("email", email))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+        StudentEntity student = studentRepository.findById(studentEntity.getId()).get();
+
+        assertEquals(firstName, student.getFirstName());
+        assertEquals(lastName, student.getLastName());
+        assertEquals(email, student.getEmail());
     }
 
 }
