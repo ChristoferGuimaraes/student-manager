@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 
-public class CourseServiceUnitTests {
+public class CourseServiceUnitTest {
 
     private String courseName;
     private String teacherName;

@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class StudentServiceUnitTests {
+public class StudentServiceUnitTest {
 
     private String firstName;
     private String lastName;

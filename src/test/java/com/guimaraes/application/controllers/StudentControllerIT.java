@@ -25,6 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -39,19 +40,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 @ContextConfiguration(classes = {StudentManagerApp.class})
+@Transactional
 public class StudentControllerIT {
-
-    private StudentEntity studentEntity;
-    private StudentDTO studentDTO;
-
-    private ObjectMapper objectMapper;
-    private MockMvc mockMvc;
 
     @Autowired
     private StudentService studentService;
 
     @Autowired
     private StudentRepository studentRepository;
+
+
+    private StudentEntity studentEntity;
+    private StudentDTO studentDTO;
+
+    private ObjectMapper objectMapper;
+    private MockMvc mockMvc;
 
 
     @BeforeEach
@@ -62,13 +65,11 @@ public class StudentControllerIT {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        LocalDate birthDate = LocalDate.parse("1993-11-22");
-
         studentEntity = StudentEntity.builder()
                 .firstName("Christofer")
                 .lastName("Guimarães")
                 .email("christofer.guimaraes@projuris.com.br")
-                .birthDate(birthDate)
+                .birthDate(LocalDate.parse("1993-11-22"))
                 .courses(Collections.emptyList())
                 .build();
 
