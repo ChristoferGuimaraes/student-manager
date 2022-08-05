@@ -8,11 +8,11 @@
         <version>2.7.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.example</groupId>
-    <artifactId>demo</artifactId>
+    <groupId>com.guimaraes</groupId>
+    <artifactId>studentmanager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo</name>
-    <description>Student Management</description>
+    <name>Student Manager</name>
+    <description>A simple project that can register students and it's courses</description>
 
     <properties>
         <java.version>11</java.version>

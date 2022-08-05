@@ -1,9 +1,9 @@
-package com.example.application;
+package com.guimaraes.application.services;
 
-import com.example.demo.dto.CourseDTO;
-import com.example.demo.entities.CourseEntity;
-import com.example.demo.repositories.CourseRepository;
-import com.example.demo.services.CourseService;
+import com.guimaraes.studentmanager.dto.CourseDTO;
+import com.guimaraes.studentmanager.entities.CourseEntity;
+import com.guimaraes.studentmanager.repositories.CourseRepository;
+import com.guimaraes.studentmanager.services.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 
-public class CourseServiceTests {
+public class CourseServiceUnitTests {
 
     private String courseName;
     private String teacherName;

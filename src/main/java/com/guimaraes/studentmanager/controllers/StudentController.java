@@ -1,7 +1,7 @@
-package com.example.demo.controllers;
+package com.guimaraes.studentmanager.controllers;
 
-import com.example.demo.dto.StudentDTO;
-import com.example.demo.services.StudentService;
+import com.guimaraes.studentmanager.dto.StudentDTO;
+import com.guimaraes.studentmanager.services.StudentService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

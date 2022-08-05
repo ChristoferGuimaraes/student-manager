@@ -1,11 +1,11 @@
-package com.example.application;
+package com.guimaraes.application.controllers;
 
-import com.example.demo.Application;
-import com.example.demo.controllers.StudentController;
-import com.example.demo.dto.StudentDTO;
-import com.example.demo.entities.StudentEntity;
-import com.example.demo.repositories.StudentRepository;
-import com.example.demo.services.StudentService;
+import com.guimaraes.studentmanager.StudentManagerApp;
+import com.guimaraes.studentmanager.controllers.StudentController;
+import com.guimaraes.studentmanager.dto.StudentDTO;
+import com.guimaraes.studentmanager.entities.StudentEntity;
+import com.guimaraes.studentmanager.repositories.StudentRepository;
+import com.guimaraes.studentmanager.services.StudentService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-@ContextConfiguration(classes = {Application.class})
+@ContextConfiguration(classes = {StudentManagerApp.class})
 public class StudentControllerIT {
 
     private StudentEntity studentEntity;

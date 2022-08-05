@@ -1,6 +1,6 @@
 spring:
   application:
-    name: StudentManager
+    name: Student Manager
   profiles:
     active: dev
   jpa:

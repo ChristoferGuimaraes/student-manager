@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.guimaraes.studentmanager;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
@@ -11,11 +11,11 @@ import java.net.InetAddress;
 
 @Slf4j
 @SpringBootApplication
-public class Application {
+public class StudentManagerApp {
 
     public static void main(String[] args) {
 
-        SpringApplication app = new SpringApplication(Application.class);
+        SpringApplication app = new SpringApplication(StudentManagerApp.class);
         Environment env = app.run(args).getEnvironment();
         String protocol = "http";
         String hostAddress = "localhost";
@@ -24,16 +24,16 @@ public class Application {
         } catch (Exception e) {
             log.trace("The host name could not be determined, using localhost as fallback");
         }
-        log.info("\n       ----------------------------------------\n\t"
+        log.info("\n       -----------------------------------------\n\t"
                         + "   Application '{}' is running! \n\t"
                         + "   Local: \t\t{}://localhost:{}\n\t"
-                        + "   External: \t{}://{}:{}\t"
-                        + "\n       ----------------------------------------",
+                        + "   External: \t{}://{}:{}\n\t"
+                        + "   Profile(s): \t{}"
+                        + "\n       -----------------------------------------",
                 env.getProperty("spring.application.name"), protocol, env.getProperty("server.port"), protocol,
-                hostAddress, env.getProperty("server.port"));
+                hostAddress, env.getProperty("server.port"), env.getActiveProfiles());
 
     }
-
 
 
 }
