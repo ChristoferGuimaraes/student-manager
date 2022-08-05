@@ -108,7 +108,8 @@ public class CourseService {
 
 
     public ResponseEntity<Object> updateCourse(String name, String courseName, String teacherName, Integer classNumber) {
-        Optional<CourseEntity> courseEntity = courseRepository.findByNameIgnoreCase(name);
+        String replaceName = name.replaceAll("\\+", " ");
+        Optional<CourseEntity> courseEntity = courseRepository.findByNameIgnoreCase(replaceName);
         Optional<CourseEntity> courseNameParam = courseRepository.findByNameIgnoreCase(courseName);
 
         if (courseEntity.isEmpty()) {
