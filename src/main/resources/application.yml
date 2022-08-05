@@ -1,10 +1,8 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/students
-    username: postgres
-    password: postgres
   application:
-    name: StudentManager
+    name: Student Manager
+  profiles:
+    active: dev
   jpa:
     show-sql: true
     properties:
@@ -19,3 +17,34 @@ server:
   error:
     include-message: always
   port: 9090
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/students
+    username: postgres
+    password: postgres
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: create
+        dialect: org.hibernate.dialect.H2Dialect
+  liquibase:
+    enabled: false

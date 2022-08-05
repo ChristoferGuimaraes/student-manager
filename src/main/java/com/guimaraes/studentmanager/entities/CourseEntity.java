@@ -1,6 +1,6 @@
-package com.example.demo.entities;
+package com.guimaraes.studentmanager.entities;
 
-import com.example.demo.dto.CourseDTO;
+import com.guimaraes.studentmanager.dto.CourseDTO;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package com.example.demo.configuration;
+package com.guimaraes.studentmanager.configuration;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

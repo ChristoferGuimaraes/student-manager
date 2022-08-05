@@ -1,12 +1,13 @@
-package com.example.demo.services;
+package com.guimaraes.studentmanager.services;
 
-import com.example.demo.dto.PayloadErrorDTO;
-import com.example.demo.dto.StudentDTO;
-import com.example.demo.entities.CourseEntity;
-import com.example.demo.entities.StudentEntity;
-import com.example.demo.repositories.CourseRepository;
-import com.example.demo.repositories.StudentRepository;
+import com.guimaraes.studentmanager.dto.PayloadErrorDTO;
+import com.guimaraes.studentmanager.dto.StudentDTO;
+import com.guimaraes.studentmanager.entities.CourseEntity;
+import com.guimaraes.studentmanager.entities.StudentEntity;
+import com.guimaraes.studentmanager.repositories.CourseRepository;
+import com.guimaraes.studentmanager.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,7 +59,7 @@ public class StudentService {
     }
 
 
-    public ResponseEntity<Object> addNewStudent(StudentDTO student) {
+    public ResponseEntity<Object> addNewStudent(@NotNull StudentDTO student) {
         Boolean studentByEmailExists = studentRepository.existsStudentByEmail(student.getEmail());
 
         if (studentByEmailExists) {
@@ -66,7 +67,7 @@ public class StudentService {
                     .body(new PayloadErrorDTO("This e-mail is already in use!"));
         }
 
-        if (student.getCourses().size() > 0) {
+        if (!student.getCourses().isEmpty()) {
             for (int i = 0; i < student.getCourses().size(); i++) {
                 Optional<CourseEntity> nameCourse = courseRepository.
                         findByNameIgnoreCase(student.getCourses().get(i).getName());

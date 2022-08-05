@@ -1,9 +1,9 @@
-package com.example.demo.services;
+package com.guimaraes.studentmanager.services;
 
-import com.example.demo.dto.CourseDTO;
-import com.example.demo.dto.PayloadErrorDTO;
-import com.example.demo.entities.CourseEntity;
-import com.example.demo.repositories.CourseRepository;
+import com.guimaraes.studentmanager.dto.CourseDTO;
+import com.guimaraes.studentmanager.dto.PayloadErrorDTO;
+import com.guimaraes.studentmanager.entities.CourseEntity;
+import com.guimaraes.studentmanager.repositories.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
@@ -108,7 +108,8 @@ public class CourseService {
 
 
     public ResponseEntity<Object> updateCourse(String name, String courseName, String teacherName, Integer classNumber) {
-        Optional<CourseEntity> courseEntity = courseRepository.findByNameIgnoreCase(name);
+        String replaceName = name.replaceAll("\\+", " ");
+        Optional<CourseEntity> courseEntity = courseRepository.findByNameIgnoreCase(replaceName);
         Optional<CourseEntity> courseNameParam = courseRepository.findByNameIgnoreCase(courseName);
 
         if (courseEntity.isEmpty()) {

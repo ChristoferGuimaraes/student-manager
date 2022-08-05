@@ -1,7 +1,7 @@
-package com.example.demo.repositories;
+package com.guimaraes.studentmanager.repositories;
 
 
-import com.example.demo.entities.StudentEntity;
+import com.guimaraes.studentmanager.entities.StudentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
