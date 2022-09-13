@@ -18,6 +18,8 @@ public class StudentDTO {
 
     private String lastName;
 
+    private String fullName;
+
     private Integer age;
 
     private String email;
@@ -30,6 +32,10 @@ public class StudentDTO {
 
     public Integer getAge() {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
+    }
+
+    public String getFullName() {
+        return getFirstName() + " " + getLastName();
     }
 
 }

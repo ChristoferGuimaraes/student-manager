@@ -39,6 +39,9 @@ public class StudentEntity {
     @Column
     private String lastName;
 
+    @Transient
+    private String fullName;
+
     @Column
     private String email;
 
@@ -61,6 +64,7 @@ public class StudentEntity {
         id = studentDTO.getId();
         firstName = studentDTO.getFirstName();
         lastName = studentDTO.getLastName();
+        fullName = studentDTO.getFullName();
         age = studentDTO.getAge();
         email = studentDTO.getEmail();
         birthDate = studentDTO.getBirthDate();
