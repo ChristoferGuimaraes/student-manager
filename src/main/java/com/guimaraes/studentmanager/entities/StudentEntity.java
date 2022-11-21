@@ -5,6 +5,7 @@ import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,6 +43,7 @@ public class StudentEntity {
     @Transient
     private String fullName;
 
+    @Email
     @Column
     private String email;
 

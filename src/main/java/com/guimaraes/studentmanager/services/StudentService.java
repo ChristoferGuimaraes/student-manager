@@ -7,7 +7,6 @@ import com.guimaraes.studentmanager.entities.StudentEntity;
 import com.guimaraes.studentmanager.repositories.CourseRepository;
 import com.guimaraes.studentmanager.repositories.StudentRepository;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +58,12 @@ public class StudentService {
     }
 
 
-    public ResponseEntity<Object> addNewStudent(@NotNull StudentDTO student) {
+    public ResponseEntity<Object> addNewStudent(StudentDTO student) {
+        if (student.getEmail() != null && student.getEmail().length() <= 10) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new PayloadErrorDTO("Invalid e-mail! Min. 10 characters!"));
+        }
+
         Boolean studentByEmailExists = studentRepository.existsStudentByEmail(student.getEmail());
 
         if (studentByEmailExists) {
